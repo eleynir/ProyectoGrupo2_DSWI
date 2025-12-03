@@ -1,10 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoGrupo2.Models;
+using ProyectoGrupo2.Data;
+using System.Linq;
 
 namespace ProyectoGrupo2.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly ApplicationDbContext _context;
+
+        public AccountController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
@@ -22,9 +31,18 @@ namespace ProyectoGrupo2.Controllers
                 return View(model);
             }
 
-            // Aquí luego iría la lógica para guardar en BD
+            bool existeCorreo = _context.Usuarios.Any(u => u.Correo == model.Correo);
+            if (existeCorreo)
+            {
+                ModelState.AddModelError("Correo", "Este correo ya está registrado.");
+                return View(model);
+            }
+
+            _context.Usuarios.Add(model);
+            _context.SaveChanges();
+
             TempData["Message"] = $"Usuario {model.Nombre} registrado correctamente.";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login");
         }
 
         // GET: /Account/Login
@@ -39,12 +57,27 @@ namespace ProyectoGrupo2.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(UsuarioModel model)
         {
+            ModelState.Remove("Nombre");
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            TempData["Message"] = $"Bienvenido, {model.Nombre ?? "usuario"}";
+            var usuario = _context.Usuarios
+                .FirstOrDefault(u => u.Correo == model.Correo
+                                   && u.Clave == model.Clave
+                                   && u.Estado == "A");
+
+            if (usuario == null)
+            {
+                ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
+                return View(model);
+            }
+
+            TempData["Message"] = "Inicio de sesión correcto.";
+            TempData["NombreUsuario"] = usuario.Nombre;
+
             return RedirectToAction("Index", "Home");
         }
     }

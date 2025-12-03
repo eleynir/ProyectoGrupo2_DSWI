@@ -3,6 +3,12 @@
 }
 
 <div class="container mt-5">
+    @if (ViewBag.NombreUsuario != null)
+    {
+        <div class="alert alert-success">
+            Bienvenido, @ViewBag.NombreUsuario
+        </div>
+    }
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-sm border-0">
@@ -33,9 +39,9 @@
                                     <p class="mb-2 small text-muted">
                                         Consulta los títulos disponibles en la biblioteca.
                                     </p>
-                                    <button class="btn btn-sm btn-outline-success w-100" disabled>
+                                    <a asp-controller="Libros" asp-action="Index" class="btn btn-sm btn-outline-success w-100">
                                         Ver catálogo
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>

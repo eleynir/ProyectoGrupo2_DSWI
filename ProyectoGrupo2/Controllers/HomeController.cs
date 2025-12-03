@@ -15,6 +15,8 @@ namespace ProyectoGrupo2.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.Message = TempData["Message"];
+            ViewBag.NombreUsuario = TempData["NombreUsuario"];
             return View();
         }
 
