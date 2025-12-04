@@ -1,0 +1,8 @@
+USE BiblioLectumDB;
+GO
+
+INSERT INTO Roles (NombreRol) VALUES ('Lector');     
+INSERT INTO Roles (NombreRol) VALUES ('Bibliotecario'); 
+INSERT INTO Roles (NombreRol) VALUES ('Administrador'); 
+
+SELECT * FROM Roles;

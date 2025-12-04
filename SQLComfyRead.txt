@@ -1,0 +1,147 @@
+CREATE DATABASE BiblioLectumDB;
+GO
+
+USE BiblioLectumDB;
+GO
+
+-- =========================================
+-- TABLA: Roles
+-- =========================================
+CREATE TABLE Roles (
+    IdRol          INT IDENTITY(1,1) PRIMARY KEY,
+    NombreRol      VARCHAR(50) NOT NULL
+);
+GO
+
+-- =========================================
+-- TABLA: Usuarios
+-- =========================================
+CREATE TABLE Usuarios (
+    IdUsuario      INT IDENTITY(1,1) PRIMARY KEY,
+    NombreCompleto NVARCHAR(150) NOT NULL,
+    Email          VARCHAR(100) NOT NULL UNIQUE,
+    PasswordHash   VARCHAR(255) NOT NULL,
+    IdRol          INT NOT NULL,
+    Estado         CHAR(1) NOT NULL DEFAULT 'A'  -- A: Activo, I: Inactivo
+);
+GO
+
+ALTER TABLE Usuarios
+ADD CONSTRAINT FK_Usuarios_Roles
+FOREIGN KEY (IdRol) REFERENCES Roles(IdRol);
+GO
+
+-- =========================================
+-- TABLA: Categorias
+-- =========================================
+CREATE TABLE Categorias (
+    IdCategoria    INT IDENTITY(1,1) PRIMARY KEY,
+    NombreCategoria NVARCHAR(100) NOT NULL,
+    Descripcion     NVARCHAR(250) NULL
+);
+GO
+
+-- =========================================
+-- TABLA: Libros
+-- =========================================
+CREATE TABLE Libros (
+    IdLibro            INT IDENTITY(1,1) PRIMARY KEY,
+    Titulo             NVARCHAR(200) NOT NULL,
+    Autor              NVARCHAR(150) NOT NULL,
+    ISBN               VARCHAR(20) NULL,
+    IdCategoria        INT NOT NULL,
+    AnioPublicacion    INT NULL,
+    Editorial          NVARCHAR(150) NULL,
+    StockTotal         INT NOT NULL DEFAULT 0,
+    StockDisponible    INT NOT NULL DEFAULT 0,
+    Estado             CHAR(1) NOT NULL DEFAULT 'A'  -- A: Activo, I: Inactivo
+);
+GO
+
+ALTER TABLE Libros
+ADD CONSTRAINT FK_Libros_Categorias
+FOREIGN KEY (IdCategoria) REFERENCES Categorias(IdCategoria);
+GO
+
+-- =========================================
+-- TABLA: Prestamos (CABECERA)
+-- =========================================
+CREATE TABLE Prestamos (
+    IdPrestamo              INT IDENTITY(1,1) PRIMARY KEY,
+    IdUsuario               INT NOT NULL,  -- Usuario lector
+    FechaRegistro           DATETIME NOT NULL DEFAULT(GETDATE()),
+    FechaRetiro             DATETIME NOT NULL,
+    FechaDevolucionEstimada DATETIME NOT NULL,
+    FechaDevolucionReal     DATETIME NULL,
+    Estado                  VARCHAR(20) NOT NULL DEFAULT('Pendiente'),
+    MontoMulta              DECIMAL(10,2) NULL
+);
+GO
+
+ALTER TABLE Prestamos
+ADD CONSTRAINT FK_Prestamos_Usuarios
+FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario);
+GO
+
+-- =========================================
+-- TABLA: PrestamoDetalle (DETALLE)
+-- =========================================
+CREATE TABLE PrestamoDetalle (
+    IdPrestamoDetalle INT IDENTITY(1,1) PRIMARY KEY,
+    IdPrestamo        INT NOT NULL,
+    IdLibro           INT NOT NULL,
+    Cantidad          INT NOT NULL DEFAULT 1
+);
+GO
+
+ALTER TABLE PrestamoDetalle
+ADD CONSTRAINT FK_PrestamoDetalle_Prestamos
+FOREIGN KEY (IdPrestamo) REFERENCES Prestamos(IdPrestamo);
+
+ALTER TABLE PrestamoDetalle
+ADD CONSTRAINT FK_PrestamoDetalle_Libros
+FOREIGN KEY (IdLibro) REFERENCES Libros(IdLibro);
+GO
+
+-- =========================================
+-- TABLA: Reservas
+-- =========================================
+CREATE TABLE Reservas (
+    IdReserva      INT IDENTITY(1,1) PRIMARY KEY,
+    IdUsuario      INT NOT NULL,
+    IdLibro        INT NOT NULL,
+    FechaReserva   DATETIME NOT NULL DEFAULT(GETDATE()),
+    FechaLimite    DATETIME NOT NULL,
+    Estado         VARCHAR(20) NOT NULL DEFAULT('Activa')  -- Activa, Expirada, Atendida
+);
+GO
+
+ALTER TABLE Reservas
+ADD CONSTRAINT FK_Reservas_Usuarios
+FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario);
+
+ALTER TABLE Reservas
+ADD CONSTRAINT FK_Reservas_Libros
+FOREIGN KEY (IdLibro) REFERENCES Libros(IdLibro);
+GO
+
+-- =========================================
+-- TABLA: Donaciones
+-- =========================================
+CREATE TABLE Donaciones (
+    IdDonacion     INT IDENTITY(1,1) PRIMARY KEY,
+    IdUsuario      INT NULL,   -- Si el donante es usuario registrado
+    NombreDonante  NVARCHAR(150) NULL, -- En caso de donante externo
+    TituloPropuesto NVARCHAR(200) NOT NULL,
+    AutorPropuesto  NVARCHAR(150) NULL,
+    Comentario      NVARCHAR(300) NULL,
+    Estado          VARCHAR(20) NOT NULL DEFAULT('Pendiente'), -- Pendiente, Aceptada, Rechazada
+    IdLibroCreado   INT NULL,  -- Si se convierte en un libro del cat logo
+    FechaRegistro   DATETIME NOT NULL DEFAULT(GETDATE())
+);
+GO
+
+ALTER TABLE Donaciones
+ADD CONSTRAINT FK_Donaciones_Usuarios
+FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario);
+GO
