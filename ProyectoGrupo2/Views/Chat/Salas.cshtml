@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Salas de Chat";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 text-center">
+                    <h4 class="fw-semibold">
+                        <i class="bi bi-door-open text-success me-2"></i>
+                        Salas disponibles
+                    </h4>
+                </div>
+
+                <div class="card-body">
+
+                    <ul id="listaSalas" class="list-group mb-3">
+                    </ul>
+
+                    <div class="input-group">
+                        <input type="text" id="nuevaSala" class="form-control"
+                               placeholder="Nueva sala (ej: Lectura)" />
+                        <button id="btnCrear" class="btn btn-success">
+                            Crear / Entrar
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="card-footer text-muted small text-center">
+                    Selecciona una sala para iniciar el chat
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+
+        const lista = document.getElementById("listaSalas");
+        const nuevaSalaInput = document.getElementById("nuevaSala");
+        const btnCrear = document.getElementById("btnCrear");
+
+        connection.on("ActualizarSalas", function (salas) {
+            lista.innerHTML = "";
+
+            for (const sala in salas) {
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+                li.innerHTML = `
+                    <span>${sala}</span>
+                    <span class="badge bg-success rounded-pill">
+                        ${salas[sala]} usuarios
+                    </span>
+                `;
+
+                li.style.cursor = "pointer";
+                li.onclick = () => {
+                    window.location.href = `/Chat/Index?sala=${sala}`;
+                };
+
+                lista.appendChild(li);
+            }
+        });
+
+        btnCrear.addEventListener("click", function () {
+            const sala = nuevaSalaInput.value.trim();
+            if (!sala) return;
+
+            window.location.href = `/Chat/Index?sala=${sala}`;
+        });
+
+        connection.start().then(() => {
+            connection.invoke("ObtenerSalas");
+        }).catch(err => console.error(err));
+    </script>
+}

@@ -15,10 +15,11 @@ namespace ProyectoGrupo2.Controllers
 
         public IActionResult Index()
         {
-            ViewBag.Message = TempData["Message"];
-            ViewBag.NombreUsuario = TempData["NombreUsuario"];
+            ViewBag.NombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+            ViewBag.IdRol = HttpContext.Session.GetInt32("IdRol");
             return View();
         }
+
 
         public IActionResult Privacy()
         {

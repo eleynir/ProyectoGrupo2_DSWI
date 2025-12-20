@@ -38,6 +38,8 @@ namespace ProyectoGrupo2.Controllers
                 return View(model);
             }
 
+            model.IdRol = 1; 
+            model.Estado = "A";
             _context.Usuarios.Add(model);
             _context.SaveChanges();
 
@@ -69,13 +71,15 @@ namespace ProyectoGrupo2.Controllers
                                    && u.Clave == model.Clave
                                    && u.Estado == "A");
 
+            HttpContext.Session.SetInt32("IdRol", usuario.IdRol);
+            HttpContext.Session.SetString("NombreUsuario", usuario.Nombre);
+
             if (usuario == null)
             {
                 ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
                 return View(model);
             }
 
-            TempData["Message"] = "Inicio de sesión correcto.";
             TempData["NombreUsuario"] = usuario.Nombre;
 
             return RedirectToAction("Index", "Home");

@@ -1,13 +1,29 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
+    int? rol = ViewBag.IdRol;
 }
 
 <div class="container mt-5">
     @if (ViewBag.NombreUsuario != null)
     {
-        <div class="alert alert-success">
-            Bienvenido, @ViewBag.NombreUsuario
-        </div>
+        @if (rol == 1)
+        {
+            <div class="alert alert-info">
+                Bienvenido lector @ViewBag.NombreUsuario.
+            </div>
+        }
+        @if (rol == 2)
+        {
+            <div class="alert alert-success">
+                Bienvenido bibliotecario @ViewBag.NombreUsuario.
+            </div>
+        }
+        @if (rol == 3)
+        {
+            <div class="alert alert-warning">
+                Bienvenido administrador @ViewBag.NombreUsuario.
+            </div>
+        }
     }
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -46,22 +62,25 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
-                            <div class="card border-0 h-100 bg-light">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <i class="bi bi-people fs-4 me-2 text-success"></i>
-                                        <h6 class="mb-0">Usuarios</h6>
+                        @if (rol == 3) 
+                        {
+                            <div class="col-md-4">
+                                <div class="card border-0 h-100 bg-light">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-people fs-4 me-2 text-success"></i>
+                                            <h6 class="mb-0">Usuarios</h6>
+                                        </div>
+                                        <p class="mb-2 small text-muted">
+                                            Administración de lectores y cuentas registradas.
+                                        </p>
+                                        <button class="btn btn-sm btn-outline-success w-100">
+                                            Gestionar usuarios
+                                        </button>
                                     </div>
-                                    <p class="mb-2 small text-muted">
-                                        Administración de lectores y cuentas registradas.
-                                    </p>
-                                    <button class="btn btn-sm btn-outline-success w-100" disabled>
-                                        Gestionar usuarios
-                                    </button>
                                 </div>
                             </div>
-                        </div>
+                        }
 
                         <div class="col-md-4">
                             <div class="card border-0 h-100 bg-light">
@@ -77,13 +96,12 @@
                                         Ver préstamos
                                     </button>
                                 </div>
+                                <a asp-controller="Chat" asp-action="Salas"
+                                       class="btn btn-sm btn-outline-success w-100">
+                                        Ir al chat
+                                    </a>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="mt-4 text-muted small">
-                        <i class="bi bi-info-circle me-1"></i>
-                        pruebaaaaaa
                     </div>
                 </div>
             </div>
