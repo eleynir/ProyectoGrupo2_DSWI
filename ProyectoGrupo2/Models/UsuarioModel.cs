@@ -22,7 +22,6 @@ namespace ProyectoGrupo2.Models
         [Column("Email")]
         public string Correo { get; set; }
 
-        [Required(ErrorMessage = "La contraseña es obligatoria")]
         [DataType(DataType.Password)]
         [StringLength(255, MinimumLength = 4, ErrorMessage = "La contraseña debe tener entre 4 y 255 caracteres")]
         [Column("PasswordHash")]

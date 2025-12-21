@@ -5,18 +5,33 @@ namespace ProyectoGrupo2.Hubs
 {
     public class ChatHub : Hub
     {
-        private static ConcurrentDictionary<string, int> Salas = new();
+
+        private static ConcurrentDictionary<string, List<UsuarioChat>> UsuariosPorSala = new();
+
         private static ConcurrentDictionary<string, string> ConexionSala = new();
 
-        public async Task UnirseSala(string sala)
+        public async Task UnirseSala(string sala, string nombre, int rol)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, sala);
-
             ConexionSala[Context.ConnectionId] = sala;
 
-            Salas.AddOrUpdate(sala, 1, (key, value) => value + 1);
+            if (!UsuariosPorSala.ContainsKey(sala))
+                UsuariosPorSala[sala] = new List<UsuarioChat>();
 
-            await Clients.All.SendAsync("ActualizarSalas", Salas);
+            UsuariosPorSala[sala].Add(new UsuarioChat
+            {
+                Nombre = nombre,
+                Rol = rol
+            });
+
+            await Clients.Group(sala)
+                .SendAsync("ActualizarUsuarios", UsuariosPorSala[sala]);
+            await Clients.All.SendAsync("ActualizarSalas", ObtenerSalas());
+        }
+
+        public Task ObtenerSalasCliente()
+        {
+            return Clients.Caller.SendAsync("ActualizarSalas", ObtenerSalas());
         }
 
         public async Task EnviarMensaje(string sala, string usuario, string mensaje)
@@ -25,26 +40,40 @@ namespace ProyectoGrupo2.Hubs
                 .SendAsync("RecibirMensaje", usuario, mensaje);
         }
 
-        public Task ObtenerSalas()
-        {
-            return Clients.Caller.SendAsync("ActualizarSalas", Salas);
-        }
-
-
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             if (ConexionSala.TryRemove(Context.ConnectionId, out string sala))
             {
-                Salas.AddOrUpdate(sala, 0, (key, value) =>
+                if (UsuariosPorSala.ContainsKey(sala))
                 {
-                    var nuevo = value - 1;
-                    return nuevo < 0 ? 0 : nuevo;
-                });
+                    UsuariosPorSala[sala].RemoveAll(u =>
+                        u.Nombre == Context.GetHttpContext()?.Session.GetString("NombreUsuario"));
 
-                await Clients.All.SendAsync("ActualizarSalas", Salas);
+                    if (UsuariosPorSala[sala].Count == 0)
+                        UsuariosPorSala.TryRemove(sala, out _);
+
+                    await Clients.Group(sala)
+                        .SendAsync("ActualizarUsuarios", UsuariosPorSala.GetValueOrDefault(sala, new()));
+                }
+
+                await Clients.All.SendAsync("ActualizarSalas", ObtenerSalas());
             }
 
             await base.OnDisconnectedAsync(exception);
         }
+
+        private Dictionary<string, int> ObtenerSalas()
+        {
+            return UsuariosPorSala.ToDictionary(
+                s => s.Key,
+                s => s.Value.Count
+            );
+        }
+    }
+
+    public class UsuarioChat
+    {
+        public string Nombre { get; set; }
+        public int Rol { get; set; }
     }
 }

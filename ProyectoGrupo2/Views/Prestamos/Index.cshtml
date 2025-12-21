@@ -1,0 +1,68 @@
+﻿@model IEnumerable<ProyectoGrupo2.Models.PrestamoModel>
+
+<h4 class="mb-3">Listado de Préstamos</h4>
+
+
+
+    <a asp-action="Create" class="btn btn-success mb-3">
+        Nuevo préstamo
+    </a>
+
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Retiro</th>
+            <th>Devolución estimada</th>
+            <th>Estado</th>
+            <th>Libros</th>
+            <th>Devuelto</th>
+            <th>Acciones</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.IdPrestamo</td>
+                <td>@p.Usuario.Nombre</td>
+                <td>@p.FechaRetiro.ToShortDateString()</td>
+                <td>@p.FechaDevolucionEstimada.ToShortDateString()</td>
+                <td>@p.Estado</td>
+                <td>
+                    <ul class="mb-0">
+                        @foreach (var d in p.Detalles)
+                        {
+                            <li>
+                                <strong>@d.Libro.Titulo</strong>
+                            </li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                @(p.FechaDevolucionReal.HasValue
+                                ? p.FechaDevolucionReal.Value.ToString("dd/MM/yyyy")
+                                : "-")
+                </td>
+                <td>
+                    @if (p.Estado == "Pendiente")
+                    {
+                        <form asp-action="Devolver" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@p.IdPrestamo" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                Devolver
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Devuelto</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

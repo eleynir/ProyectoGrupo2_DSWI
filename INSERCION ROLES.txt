@@ -5,4 +5,23 @@ INSERT INTO Roles (NombreRol) VALUES ('Lector');
 INSERT INTO Roles (NombreRol) VALUES ('Bibliotecario'); 
 INSERT INTO Roles (NombreRol) VALUES ('Administrador'); 
 
+
+INSERT INTO Usuarios
+(
+    NombreCompleto,
+    Email,
+    PasswordHash,
+    IdRol,
+    Estado
+)
+VALUES
+(
+    'Admin Principal',
+    'admin@biblioteca.com',
+    'admin123',
+    3,
+    'A'
+);
+
+
 SELECT * FROM Roles;

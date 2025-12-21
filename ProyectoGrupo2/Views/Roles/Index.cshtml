@@ -1,0 +1,32 @@
+﻿@model List<ProyectoGrupo2.Models.RolModel>
+
+<h3>Mantenimiento de Roles</h3>
+
+<a asp-action="Create" class="btn btn-success mb-3">
+    Nuevo Rol
+</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rol in Model)
+        {
+            <tr>
+                <td>@rol.IdRol</td>
+                <td>@rol.NombreRol</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@rol.IdRol"
+                       class="btn btn-sm btn-outline-primary">
+                        Editar
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

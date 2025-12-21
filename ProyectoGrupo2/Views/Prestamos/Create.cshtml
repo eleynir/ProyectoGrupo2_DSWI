@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Registrar Préstamo";
+}
+
+<div class="container mt-4">
+    <div class="col-md-6 mx-auto">
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="bi bi-journal-plus me-2 text-success"></i>
+                    Registrar Préstamo
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label">Lector</label>
+                        <select name="IdUsuario" class="form-select" required>
+                            <option value="">Seleccione lector</option>
+                            @foreach (var u in ViewBag.Usuarios)
+                            {
+                                <option value="@u.Id">@u.Nombre</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Libro</label>
+                        <select name="IdLibro" class="form-select" required>
+                            <option value="">Seleccione libro</option>
+                            @foreach (var l in ViewBag.Libros)
+                            {
+                                <option value="@l.Id">@l.Titulo</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de retiro</label>
+                        <input type="date" name="FechaRetiro" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha devolución estimada</label>
+                        <input type="date" name="FechaDevolucionEstimada" class="form-control" required />
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            Registrar préstamo
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>

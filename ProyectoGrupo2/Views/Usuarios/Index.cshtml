@@ -1,0 +1,49 @@
+﻿@model List<UsuarioModel>
+
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+}
+
+<div class="container mt-4">
+    <h4 class="fw-semibold mb-3">
+        <i class="bi bi-people me-2 text-success"></i>
+        Gestión de Usuarios
+    </h4>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th style="width: 160px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.Nombre</td>
+                    <td>@u.Correo</td>
+                    <td>@u.IdRol</td>
+                    <td>
+                        <span class="badge @(u.Estado == "A" ? "bg-success" : "bg-secondary")">
+                            @(u.Estado == "A" ? "Activo" : "Inactivo")
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Edit" asp-route-id="@u.Id"
+                               class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                     
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

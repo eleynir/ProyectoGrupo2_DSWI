@@ -15,6 +15,11 @@ namespace ProyectoGrupo2.Controllers
 
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetInt32("IdRol") == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             ViewBag.NombreUsuario = HttpContext.Session.GetString("NombreUsuario");
             ViewBag.IdRol = HttpContext.Session.GetInt32("IdRol");
             return View();
