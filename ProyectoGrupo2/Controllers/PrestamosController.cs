@@ -95,6 +95,18 @@ namespace ProyectoGrupo2.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult Historial(int idUsuario)
+        {
+            var prestamos = _context.Prestamos
+                .Where(p => p.IdUsuario == idUsuario)
+                .Include(p => p.Detalles)
+                    .ThenInclude(d => d.Libro)
+                .OrderByDescending(p => p.FechaRegistro)
+                .ToList();
+
+            return View(prestamos);
+        }
+
     }
 
 }

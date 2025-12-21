@@ -29,3 +29,11 @@ body {
     --bs-btn-hover-bg: #198754;
     --bs-btn-hover-color: #fff;
 }
+
+.navbar .nav-link:hover {
+    opacity: 0.85;
+}
+
+.dropdown-menu {
+    font-size: 0.9rem;
+}

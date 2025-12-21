@@ -61,7 +61,15 @@
                     {
                         <span class="badge bg-secondary">Devuelto</span>
                     }
+
+                    <a asp-controller="Prestamos"
+                       asp-action="Historial"
+                       asp-route-idUsuario="@p.IdUsuario"
+                       class="btn btn-sm btn-outline-primary ms-1">
+                        Historial
+                    </a>
                 </td>
+
             </tr>
         }
     </tbody>
